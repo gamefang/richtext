@@ -2,21 +2,17 @@
 #2018/11/16 富文本格式转换
 #2018/11/17,19 添加ini配置文件支持
 
+__author__='gamefang'
+version='v1.0.3'
+
 import json
 import codecs
 
-INI_FILE='conf.ini'
-
-def load_config(fn):
-    '''
-    读取配置文件（INI形式），转化为配置字典。
-    @param fn: 文件路径。
-    @return: 配置字典。
-    '''
-    import configparser
-    cfg=configparser.ConfigParser()
-    cfg.read(fn,encoding='utf8')
-    return cfg._sections
+#加载配置并全局化
+import configparser
+cfg=configparser.ConfigParser()
+cfg.read('parser.ini',encoding='utf8')
+cfg={ **cfg._defaults,**cfg._sections }
 
 def parser(richtext,rules):
     '''
@@ -41,17 +37,12 @@ def parser(richtext,rules):
     return ','.join(new_texts)
 
 def main(cfg):
-    '''
-    批量转换
-    @param cfg: 配置内容（INI文件转化的字典）
-    '''
-    with codecs.open(cfg['0']['input_file'],'r','utf8') as f:
+    with codecs.open(cfg['input_file'],'r','utf8') as f:
         rich_texts=[parser(text,cfg['rules']) for text in f.readlines()]
-    with codecs.open(cfg['0']['output_file'],'w','utf8') as f:
+    with codecs.open(cfg['output_file'],'w','utf8') as f:
         for text in rich_texts:
             f.write(text+'\n')
-
+    print('<%s> done!' % cfg['output_file'])
+    
 if __name__ == '__main__':
-    cfg=load_config(INI_FILE)
     main(cfg)
-    print('<%s> done!' % cfg['0']['output_file'])
