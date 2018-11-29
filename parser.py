@@ -3,9 +3,8 @@
 #2018/11/17,19 添加ini配置文件支持
 
 __author__='gamefang'
-version='v1.0.3'
+version='v1.0.4'
 
-import json
 import codecs
 
 #加载配置并全局化
@@ -25,6 +24,10 @@ def parser(richtext,rules):
     signs=[item for item in rules.keys() if len(item)==1]
     new_texts=[]
     for text in texts:
+        text=text.strip()
+        if not text:    #跳过空行
+            new_texts.append('')
+            continue
         if text.startswith(tuple(signs)):  #特殊渲染
             new_text = rules[text[0]] + text[1:] + rules['normal_suf']
         else:   #普通渲染
